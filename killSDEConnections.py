@@ -23,17 +23,21 @@ def getConfiguration(filename):
 	}
 	return c
 
+def executeSQL(db, user, pw, sql):
+	connection = cx_Oracle.connect(user + "/" + pw + "@" + db)
+	cursor = connection.cursor()
+	cursor.execute(sql)
+	results = cursor.fetchall()
+	cursor.close()
+	connection.close()
+	return results
+
 def getConnectionsToKill(configuration):
 	result = []
 	inClause = "('" + "','".join(configuration['ARCGISSERVERHOSTS']) + "')"
 	sql = "select sde_id, owner, nodename, start_time from SDE.PROCESS_INFORMATION where START_TIME < (select sysdate - interval '1' day from dual) and nodename in " + inClause
 	print sql
-	connection = cx_Oracle.connect(configuration['sdeuser'] + "/" + configuration['sdepw'] + "@" + configuration['oracledb'])
-	cursor = connection.cursor()
-	cursor.execute(sql)
-	connections = cursor.fetchall()
-	cursor.close()
-	connection.close()
+	connections = executeSQL(configuration['oracledb'], configuration['sdeuser'], configuration['sdepw'], sql)
 	
 	print "SDE-Connections to kill:"
 	for c in connections:
