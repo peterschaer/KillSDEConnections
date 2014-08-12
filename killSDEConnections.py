@@ -48,7 +48,7 @@ def getConnectionsToKill(configuration):
 def killConnections(connections, configuration):
 	for c in connections:
 		cmd = "sdemon -o kill -i " + configuration['sdeport'] + " -s " + configuration['sdehost'] + " -u " + configuration['sdeuser'] + " -p " + configuration['sdepw'] + " -N -t " + str(c)
-		#~ subprocess.call(cmd)
+		subprocess.call(cmd)
 		print cmd
 	
 if __name__ == '__main__':
